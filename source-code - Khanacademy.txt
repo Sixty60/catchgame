@@ -1,0 +1,104 @@
+//falling object parameters
+var fallingObjects = 0;
+
+var score = function(score) {
+    this.score = 0;
+};
+
+var ball = function(x, y) {
+    this.x = random(50,300);
+    this.y = 50;
+    this.speed = 1;
+};
+var player = function(x,y) {
+    this.x = 200;
+    this.y = 350;
+};
+
+player.prototype.draw = function() {
+    rectMode(CENTER);
+    fill(255,255,255);
+    rect(player.x, player.y, 50, 5);
+};
+
+player.prototype.moveLeft = function() {
+    this.x -=2;
+};
+
+player.prototype.moveRight = function() {
+    this.x +=2;
+};
+
+ball.prototype.draw = function() {
+    ellipse(this.x, this.y, 10, 10);
+};
+
+ball.prototype.fall = function() {
+    this.y += this.speed;
+};
+
+score.prototype.draw = function() {
+    text("Score " + this.score,10, 20);
+};
+
+//collision function, checks coordinates for ball and player to find overlap
+player.prototype.checkForHit = function(ball) {
+    //Check if player touches ball
+    if((ball.x >= this.x-25 && ball.x <= (this.x+25)) && 
+    (ball.y >= this.y && ball.y <= (this.y+5))) {
+        playSound(getSound("retro/coin"));
+        fallingObjects = 0;
+        ball.y = 50;
+        ball.x = random(50, 300);
+        score.score++;
+        
+    }
+};
+
+//creates the objects
+var score = new score (10, 300);
+var player = new player (10, 300);
+var ball = new ball (10, 300);
+
+draw = function() {
+    background(0,0,0);
+    
+    //check if left or right is pressed
+    if (keyIsPressed && keyCode === 37) {
+        player.x -= 3;
+    } else if(keyIsPressed && keyCode === 39) {
+        player.x += 3;
+    }
+    
+    //ball falling and collision, calls on ball.fall(); and player.checkForHit();
+    if (fallingObjects === 0){
+        fallingObjects = 1;
+        
+    }else if (fallingObjects === 1) {
+        ball.fall();
+        player.checkForHit(ball);
+    }
+    
+    //difficulty spikes depending on score
+    if(score.score >= 5 && score.score < 10){
+        ball.speed = 2;
+    }else if (score.score >= 10 && score.score < 25) {
+        ball.speed = 3;
+    }else if (score.score >= 25) {
+        ball.speed = 4;
+    }
+    if(ball.y > 400) {
+        background(0,0,0);
+        textFont("sans-serif", 40);
+        text("GAME OVER", 75, 200);
+        fallingObjects = 3;
+        textFont("sans-serif", 12);
+        ball.x = 1000;
+        
+    }
+    
+    score.draw();
+    player.draw();
+    ball.draw();
+};
+

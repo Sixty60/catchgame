@@ -1,4 +1,10 @@
-//falling object parameters
+    var sketchProc = function(processingInstance) {
+     with (processingInstance) {
+        size(400, 400); 
+        frameRate(60);
+        
+        // ProgramCodeGoesHere
+        //falling object parameters
 var fallingObjects = 0;
 
 var score = function(score) {
@@ -22,11 +28,15 @@ player.prototype.draw = function() {
 };
 
 player.prototype.moveLeft = function() {
-    this.x -=2;
+    this.x -=3;
 };
 
 player.prototype.moveRight = function() {
-    this.x +=2;
+    this.x +=3;
+};
+
+player.prototype.stop = function() {
+    this.x += 0;
 };
 
 ball.prototype.draw = function() {
@@ -46,7 +56,6 @@ player.prototype.checkForHit = function(ball) {
     //Check if player touches ball
     if((ball.x >= this.x-25 && ball.x <= (this.x+25)) && 
     (ball.y >= this.y && ball.y <= (this.y+5))) {
-        playSound(getSound("retro/coin"));
         fallingObjects = 0;
         ball.y = 50;
         ball.x = random(50, 300);
@@ -60,15 +69,35 @@ var score = new score (10, 300);
 var player = new player (10, 300);
 var ball = new ball (10, 300);
 
+
+//check if left or right is pressed
+
+
+keyPressed = function(){
+        if(keyCode === 37) {
+            player.moveLeft();
+        } else if(keyCode === 39) {
+            player.moveRight();
+        }
+}
+
 draw = function() {
     background(0,0,0);
     
-    //check if left or right is pressed
-    if (keyIsPressed && keyCode === 37) {
-        player.x -= 3;
-    } else if(keyIsPressed && keyCode === 39) {
-        player.x += 3;
+
+
+
+    /*
+    if(keyPressed && keyCode === 37 && fallingObjects !== 3 ) {
+        player.moveLeft();
+    }else if (keyPressed && keyCode === 39 && fallingObjects !== 3 ) {
+        player.moveRight();
+    } else{
+        player.stop();
     }
+        */
+   
+    
     
     //ball falling and collision, calls on ball.fall(); and player.checkForHit();
     if (fallingObjects === 0){
@@ -87,6 +116,29 @@ draw = function() {
     }else if (score.score >= 25) {
         ball.speed = 4;
     }
+    if(ball.y > 400) {
+        background(0,0,0);
+        textFont("sans-serif", 40);
+        text("GAME OVER", 75, 200);
+        fallingObjects = 3;
+        textFont("sans-serif", 12);
+        ball.x = 1000;
+        player.stop();
+        
+    }
+    
+    score.draw();
+    if(fallingObjects !== 3){
+    player.draw();
+    };
+    ball.draw();
+};
+    }};
+
+    // Get the canvas that Processing-js will use
+    var canvas = document.getElementById("mycanvas"); 
+    // Pass the function sketchProc (defined in myCode.js) to Processing's constructor.
+    var processingInstance = new Processing(canvas, sketchProc); 
     if(ball.y > 400) {
         background(0,0,0);
         textFont("sans-serif", 40);
